@@ -1,0 +1,36 @@
+version: '3.4'
+
+services:
+  ecommerce.presentation:
+    image: ${DOCKER_REGISTRY-}ecommercepresentation
+    container_name: presentation
+    build:
+      context: .
+      dockerfile: src/ECommerce.Presentation/Dockerfile
+    ports:
+        - 5000:80
+  ecommerce.postgresql:
+    image: postgres:latest
+    container_name: database
+    environment:
+        - POSTGRES_DB=ecommerce
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+    volumes:
+        - ./containers/db:/var/lib/postgresql/data
+    ports:
+        - 5432:5432
+
+  ecommerse.mq:
+    image: rabbitmq:3-management
+    container_name: rabbitMQ
+    hostname: rabbitMq-host
+    environment:
+        RABBITMQ_DEFAULT_USER: guest
+        RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+        - ./containers/queue/data:/var/lib/rabbitmq
+        - ./containers/queue/log:/var/log/rabbitmq
+    ports:
+        - 5672:5672
+        - 15672:15672
